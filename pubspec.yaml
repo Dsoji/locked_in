@@ -37,6 +37,7 @@ dependencies:
   cupertino_icons: ^1.0.8
   ios_screen_time_tools: ^0.0.13
   screen_time: ^0.10.3
+  block_app: ^0.0.1
 
 dev_dependencies:
   flutter_test:
