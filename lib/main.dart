@@ -52,7 +52,6 @@ class _MyHomePageState extends State<MyHomePage> {
             children: <Widget>[
               const Text(
                 'Focus score:',
-                style: TextStyle(color: Colors.white70),
               ),
               Text(
                 '$_counter',
