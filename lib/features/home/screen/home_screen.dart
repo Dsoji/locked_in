@@ -1,177 +1,413 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import '../widgets/focus_score_indicator.dart';
-import '../widgets/metric_card.dart';
+import 'package:iconsax_plus/iconsax_plus.dart';
 
+import '../widgets/focus_score_indicator.dart';
+
+@RoutePage()
 class HomeScreen extends HookConsumerWidget {
   const HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('LOCKED IN'),
-        leading: IconButton(
-          icon: const Icon(Icons.menu_rounded),
-          onPressed: () {},
-        ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.person_outline_rounded),
-            onPressed: () {},
-          ),
-        ],
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 24.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const SizedBox(height: 20),
-            Text(
-              'Good evening,',
-              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                    color: Colors.black54,
+      backgroundColor:
+          const Color(0xFFE0E0E0), // Slightly darker grey background
+      body: Stack(
+        children: [
+          SafeArea(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 24.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  const SizedBox(height: 16),
+                  // Header
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'LOCKED IN',
+                        style: GoogleFonts.inter(
+                          fontSize: 24,
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: -1,
+                          color: Colors.black, // Black text
+                        ),
+                      ),
+                      Row(
+                        children: [
+                          const Icon(IconsaxPlusBold.flash_1,
+                              color: Colors.black, size: 20),
+                          const SizedBox(width: 4),
+                          Text(
+                            '42',
+                            style: GoogleFonts.inter(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black,
+                            ),
+                          ),
+                          const SizedBox(width: 16),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 10, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: Colors.black.withOpacity(0.05),
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: Text(
+                              'PRO',
+                              style: GoogleFonts.inter(
+                                fontSize: 10,
+                                fontWeight: FontWeight.w900,
+                                color: Colors.black,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 16),
+                          const Icon(IconsaxPlusLinear.export_1,
+                              color: Colors.black),
+                        ],
+                      ),
+                    ],
                   ),
-            ),
-            Text(
-              'Ready to focus?',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-            const SizedBox(height: 40),
-            const Center(
-              child: FocusScoreIndicator(
-                score: 82.0,
-                label: 'Highly focused',
+                  const SizedBox(height: 48),
+
+                  // Center Orb
+                  const FocusScoreIndicator(
+                    score: 61,
+                    label: 'Focusing',
+                  ),
+                  const SizedBox(height: 56),
+
+                  // Stats Row
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      _buildStatItem('FOCUS', '61%', Colors.black),
+                      _buildStatItem('SCREEN TIME', '8h 40m', Colors.black,
+                          hasArrow: true),
+                      Column(
+                        children: [
+                          Text(
+                            'CULPRITS',
+                            style: GoogleFonts.inter(
+                              color: Colors.black54,
+                              fontSize: 10,
+                              fontWeight: FontWeight.w600,
+                              letterSpacing: 1,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Row(
+                            children: const [
+                              Icon(IconsaxPlusBold.instagram,
+                                  size: 16, color: Colors.black),
+                              SizedBox(width: 4),
+                              Icon(IconsaxPlusBold.message,
+                                  size: 16, color: Colors.black),
+                              SizedBox(width: 4),
+                              Icon(IconsaxPlusBold.video_circle,
+                                  size: 16, color: Colors.black),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 48),
+
+                  // Daily Insights Card
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      'Daily Insights',
+                      style: GoogleFonts.inter(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      "Today's update on your focus",
+                      style: GoogleFonts.inter(
+                        fontSize: 14,
+                        color: Colors.black54,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Container(
+                    height: 280,
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(24),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFEEEEEE), // Darker card background
+                      borderRadius: BorderRadius.circular(32),
+                      border: Border.all(color: Colors.black.withOpacity(0.05)),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        RichText(
+                          text: TextSpan(
+                            style: GoogleFonts.inter(
+                              fontSize: 16,
+                              color: Colors.white,
+                              height: 1.4,
+                            ),
+                            children: const [
+                              TextSpan(text: 'You could\'ve earned '),
+                              TextSpan(
+                                text: 'US\$151',
+                                style: TextStyle(
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.bold,
+                                  decoration: TextDecoration.underline,
+                                ),
+                              ),
+                              TextSpan(text: '\nin the time spent scrolling'),
+                            ],
+                          ),
+                        ),
+                        const Spacer(),
+                        Container(
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(16),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.2),
+                                blurRadius: 20,
+                                offset: const Offset(0, 10),
+                              ),
+                            ],
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    'FOCUS RECEIPT',
+                                    style: GoogleFonts.spaceMono(
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.bold,
+                                      letterSpacing: 2,
+                                      color: Colors.black87,
+                                    ),
+                                  ),
+                                  Text(
+                                    '2 Feb',
+                                    style: GoogleFonts.spaceMono(
+                                      fontSize: 10,
+                                      color: Colors.black54,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const Divider(height: 24, color: Colors.black12),
+                              _buildReceiptRow('TikTok', 'US\$95.85'),
+                              const SizedBox(height: 8),
+                              _buildReceiptRow('Snapchat', 'US\$31.96'),
+                              const SizedBox(height: 8),
+                              _buildReceiptRow('Books', 'US\$23.12'),
+                              const Divider(height: 24, color: Colors.black12),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    'SUBTOTAL',
+                                    style: GoogleFonts.spaceMono(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.black,
+                                    ),
+                                  ),
+                                  Text(
+                                    'Priceless',
+                                    style: GoogleFonts.spaceMono(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.black,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 120), // Bottom padding for FAB
+                ],
               ),
             ),
-            const SizedBox(height: 48),
-            GridView.count(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              crossAxisCount: 2,
-              crossAxisSpacing: 16,
-              mainAxisSpacing: 16,
-              childAspectRatio: 0.85,
-              children: const [
-                MetricCard(
-                  title: 'Saved Time',
-                  value: '4h 12m',
-                  subtitle: '+12% from yesterday',
-                  icon: Icons.timer_outlined,
-                ),
-                MetricCard(
-                  title: 'Deep Work',
-                  value: '3 slots',
-                  subtitle: '2 remaining today',
-                  icon: Icons.auto_graph_rounded,
-                ),
-              ],
-            ),
-            const SizedBox(height: 32),
-            ElevatedButton(
-              onPressed: () {},
-              child: const Text('START FOCUS SESSION'),
-            ),
-            const SizedBox(height: 40),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'RECENT SESSIONS',
-                  style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                        color: Colors.black45,
-                        letterSpacing: 1.2,
-                      ),
-                ),
-                TextButton(
-                  onPressed: () {},
-                  child: const Text(
-                    'See all',
-                    style: TextStyle(color: Colors.black, fontSize: 12),
+          ),
+
+          // Floating Action Bar
+          Positioned(
+            bottom: 32, // Adjusted to avoid bottom nav if needed
+            left: 24,
+            right: 24,
+            child: Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: const Color(0xFF1E1E1E),
+                borderRadius: BorderRadius.circular(32),
+                border: Border.all(color: Colors.white.withOpacity(0.1)),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.2), // Light shadow
+                    blurRadius: 20,
+                    offset: const Offset(0, 10),
                   ),
-                ),
-              ],
+                ],
+              ),
+              child: Row(
+                children: [
+                  _buildIconButton(Icons.remove),
+                  const SizedBox(width: 8),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 20, vertical: 12),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Text(
+                      '20m',
+                      style: GoogleFonts.inter(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  _buildIconButton(Icons.add),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Container(
+                      height: 48,
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [
+                            Colors.grey.shade900,
+                            Colors.black,
+                          ],
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                        ),
+                        borderRadius: BorderRadius.circular(24),
+                        border:
+                            Border.all(color: Colors.white.withOpacity(0.1)),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(Icons.play_arrow,
+                              color: Colors.white, size: 20),
+                          const SizedBox(width: 8),
+                          Text(
+                            'Start Timer',
+                            style: GoogleFonts.inter(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
-            const SizedBox(height: 8),
-            _buildRecentSession(
-              context,
-              'Social Media Block',
-              '2h 00m',
-              'Focused',
-              Icons.block_flipped,
-            ),
-            _buildRecentSession(
-              context,
-              'Deep Work Alpha',
-              '1h 30m',
-              'Highly Effective',
-              Icons.psychology_outlined,
-            ),
-            const SizedBox(height: 40),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
 
-  Widget _buildRecentSession(
-    BuildContext context,
-    String title,
-    String duration,
-    String status,
-    IconData icon,
-  ) {
+  Widget _buildStatItem(String label, String value, Color color,
+      {bool hasArrow = false}) {
+    return Column(
+      children: [
+        Text(
+          label,
+          style: GoogleFonts.inter(
+            color: Colors.black54, // Grey text
+            fontSize: 10,
+            fontWeight: FontWeight.w600,
+            letterSpacing: 1,
+          ),
+        ),
+        const SizedBox(height: 8),
+        Row(
+          children: [
+            Text(
+              value,
+              style: GoogleFonts.inter(
+                color: color,
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            if (hasArrow) ...[
+              const SizedBox(width: 4),
+              Icon(Icons.arrow_forward_ios,
+                  size: 12, color: Colors.black26), // Light arrow
+            ],
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildReceiptRow(String item, String price) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          item,
+          style: GoogleFonts.spaceMono(
+            fontSize: 12,
+            color: Colors.black87,
+          ),
+        ),
+        Text(
+          price,
+          style: GoogleFonts.spaceMono(
+            fontSize: 12,
+            fontWeight: FontWeight.bold,
+            color: Colors.black,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildIconButton(IconData icon) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(16),
+      width: 40,
+      height: 40,
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.5),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.black.withOpacity(0.05)),
+        color: Colors.black.withOpacity(0.05), // Light grey bg
+        shape: BoxShape.circle,
       ),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: Colors.black.withOpacity(0.05),
-              shape: BoxShape.circle,
-            ),
-            child: Icon(icon, size: 20, color: Colors.black87),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.w700,
-                    fontSize: 14,
-                  ),
-                ),
-                Text(
-                  status,
-                  style: const TextStyle(
-                    color: Colors.black38,
-                    fontSize: 12,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Text(
-            duration,
-            style: const TextStyle(
-              fontWeight: FontWeight.w800,
-              fontSize: 14,
-              letterSpacing: -0.5,
-            ),
-          ),
-        ],
-      ),
+      child: Icon(icon, color: Colors.black, size: 20), // Black icon
     );
   }
 }

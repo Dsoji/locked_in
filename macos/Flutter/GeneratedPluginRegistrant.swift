@@ -5,8 +5,10 @@
 import FlutterMacOS
 import Foundation
 
+import path_provider_foundation
 import screen_time
 
 func RegisterGeneratedPlugins(registry: FlutterPluginRegistry) {
+  PathProviderPlugin.register(with: registry.registrar(forPlugin: "PathProviderPlugin"))
   ScreenTimePlugin.register(with: registry.registrar(forPlugin: "ScreenTimePlugin"))
 }

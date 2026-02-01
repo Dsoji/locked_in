@@ -4,18 +4,18 @@ class AppTheme {
   static ThemeData get theme {
     return ThemeData(
       brightness: Brightness.light,
-      scaffoldBackgroundColor: Colors.transparent,
+      scaffoldBackgroundColor: Colors.white, // Light background
       primaryColor: Colors.black,
       colorScheme: ColorScheme.fromSeed(
         seedColor: Colors.black,
         brightness: Brightness.light,
-        primary: Colors.black,
+        primary: Colors.black, // Primary accent is now black
         onPrimary: Colors.white,
-        secondary: const Color(0xFF424242), // Grey 800
-        onSecondary: Colors.white,
-        surface: Colors.white.withOpacity(0.9),
+        secondary: const Color(0xFFE0E0E0), // Light grey
+        onSecondary: Colors.black,
+        surface: Colors.white, // Light surface
         onSurface: Colors.black,
-        error: const Color(0xFF333333), // Minimalist dark error
+        error: const Color(0xFFB00020),
         onError: Colors.white,
       ),
       useMaterial3: true,
@@ -24,12 +24,12 @@ class AppTheme {
         elevation: 0,
         centerTitle: true,
         titleTextStyle: TextStyle(
-          color: Colors.black,
+          color: Colors.black, // Black text
           fontSize: 22,
           fontWeight: FontWeight.w800,
           letterSpacing: 1.2,
         ),
-        iconTheme: IconThemeData(color: Colors.black, size: 28),
+        iconTheme: IconThemeData(color: Colors.black, size: 28), // Black icons
       ),
       textTheme: const TextTheme(
         displayLarge: TextStyle(
@@ -53,7 +53,7 @@ class AppTheme {
           fontWeight: FontWeight.w500,
         ),
         bodyMedium: TextStyle(
-          color: Color(0xFF616161), // Grey 700
+          color: Colors.black54,
           fontSize: 14,
           fontWeight: FontWeight.w400,
         ),
@@ -64,7 +64,7 @@ class AppTheme {
         ),
       ),
       cardTheme: CardThemeData(
-        color: Colors.white.withOpacity(0.8),
+        color: const Color(0xFFF5F5F5), // Light grey card background
         elevation: 0,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(24),
@@ -73,8 +73,8 @@ class AppTheme {
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.black,
-          foregroundColor: Colors.white,
+          backgroundColor: Colors.black, // Black button
+          foregroundColor: Colors.white, // White text
           minimumSize: const Size(double.infinity, 60),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20),
@@ -86,6 +86,31 @@ class AppTheme {
           ),
           elevation: 0,
         ),
+      ),
+      navigationBarTheme: NavigationBarThemeData(
+        backgroundColor: Colors.white, // White nav bar
+        indicatorColor: Colors.black, // Black indicator
+        elevation: 0,
+        labelTextStyle: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
+            return const TextStyle(
+              color: Colors.black,
+              fontWeight: FontWeight.w700,
+              fontSize: 12,
+            );
+          }
+          return const TextStyle(
+            color: Colors.grey,
+            fontWeight: FontWeight.w500,
+            fontSize: 12,
+          );
+        }),
+        iconTheme: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
+            return const IconThemeData(color: Colors.white, size: 24);
+          }
+          return const IconThemeData(color: Colors.grey, size: 24);
+        }),
       ),
     );
   }
