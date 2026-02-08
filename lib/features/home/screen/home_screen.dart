@@ -1,115 +1,252 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:iconsax_plus/iconsax_plus.dart';
+
+import '../../../core/widgets/gradient_background.dart';
+import '../../blocker/screen/blocker_screen.dart';
+import '../../schedule/screen/schedule_list_screen.dart';
+import '../../settings/screen/settings_screen.dart';
+import '../../usage/data/usage_repository.dart';
 import '../widgets/focus_score_indicator.dart';
 import '../widgets/metric_card.dart';
+
+class HomeDashboardData {
+  final int todayUsageSeconds;
+  final int yesterdayUsageSeconds;
+  final int deepWorkSlots;
+
+  HomeDashboardData({
+    required this.todayUsageSeconds,
+    required this.yesterdayUsageSeconds,
+    required this.deepWorkSlots,
+  });
+}
+
+final homeDashboardDataProvider =
+    FutureProvider<HomeDashboardData>((ref) async {
+  final repository = ref.watch(usageRepositoryProvider);
+  final today = await repository.getTodayUsageSeconds();
+  final yesterday = await repository.getYesterdayUsageSeconds();
+  final deepWork = await repository.getDeepWorkSlotsToday();
+
+  return HomeDashboardData(
+    todayUsageSeconds: today,
+    yesterdayUsageSeconds: yesterday,
+    deepWorkSlots: deepWork,
+  );
+});
 
 class HomeScreen extends HookConsumerWidget {
   const HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('LOCKED IN'),
-        leading: IconButton(
-          icon: const Icon(Icons.menu_rounded),
-          onPressed: () {},
-        ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.person_outline_rounded),
-            onPressed: () {},
-          ),
-        ],
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 24.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const SizedBox(height: 20),
-            Text(
-              'Good evening,',
-              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                    color: Colors.black54,
-                  ),
-            ),
-            Text(
-              'Ready to focus?',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-            const SizedBox(height: 40),
-            const Center(
-              child: FocusScoreIndicator(
-                score: 82.0,
-                label: 'Highly focused',
-              ),
-            ),
-            const SizedBox(height: 48),
-            GridView.count(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              crossAxisCount: 2,
-              crossAxisSpacing: 16,
-              mainAxisSpacing: 16,
-              childAspectRatio: 0.85,
-              children: const [
-                MetricCard(
-                  title: 'Saved Time',
-                  value: '4h 12m',
-                  subtitle: '+12% from yesterday',
-                  icon: Icons.timer_outlined,
-                ),
-                MetricCard(
-                  title: 'Deep Work',
-                  value: '3 slots',
-                  subtitle: '2 remaining today',
-                  icon: Icons.auto_graph_rounded,
-                ),
-              ],
-            ),
-            const SizedBox(height: 32),
-            ElevatedButton(
-              onPressed: () {},
-              child: const Text('START FOCUS SESSION'),
-            ),
-            const SizedBox(height: 40),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    final dashboardDataAsync = ref.watch(homeDashboardDataProvider);
+
+    return GradientBackground(
+      child: SafeArea(
+        child: RefreshIndicator(
+          onRefresh: () async {
+            // refresh data
+            return ref.refresh(homeDashboardDataProvider.future);
+          },
+          child: SingleChildScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            padding: const EdgeInsets.symmetric(horizontal: 24.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  'RECENT SESSIONS',
-                  style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                        color: Colors.black45,
-                        letterSpacing: 1.2,
-                      ),
+                const SizedBox(height: 20),
+                // Header
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Locked In',
+                      style:
+                          Theme.of(context).textTheme.headlineSmall?.copyWith(
+                                fontWeight: FontWeight.bold,
+                              ),
+                    ),
+                    Row(
+                      children: [
+                        IconButton(
+                          icon: const Icon(IconsaxPlusLinear.chart_2),
+                          tooltip: 'Statistics',
+                          onPressed: () {
+                            // ...
+                          },
+                        ),
+                        IconButton(
+                          icon: const Icon(IconsaxPlusLinear.setting_2),
+                          onPressed: () {
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (_) => const SettingsScreen(),
+                              ),
+                            );
+                          },
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
-                TextButton(
-                  onPressed: () {},
-                  child: const Text(
-                    'See all',
-                    style: TextStyle(color: Colors.black, fontSize: 12),
+                const SizedBox(height: 20),
+                dashboardDataAsync.when(
+                  data: (data) => Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Good evening,',
+                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                              color: Colors.black54,
+                            ),
+                      ),
+                      Text(
+                        'Ready to focus?',
+                        style: Theme.of(context).textTheme.headlineMedium,
+                      ),
+                      const SizedBox(height: 40),
+                      Center(
+                        child: FocusScoreIndicator(
+                          score: _calculateFocusScore(data),
+                          label: _getFocusLabel(_calculateFocusScore(data)),
+                        ),
+                      ),
+                      const SizedBox(height: 48),
+                      GridView.count(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        crossAxisCount: 2,
+                        crossAxisSpacing: 16,
+                        mainAxisSpacing: 16,
+                        childAspectRatio: 1.1,
+                        children: [
+                          MetricCard(
+                            title: 'Saved Time',
+                            value: _formatDuration(data.todayUsageSeconds),
+                            subtitle: _calculateTrend(data.todayUsageSeconds,
+                                data.yesterdayUsageSeconds),
+                            icon: IconsaxPlusLinear.timer_1,
+                            color: Colors.black,
+                          ),
+                          MetricCard(
+                            title: 'Deep Work',
+                            value: '${data.deepWorkSlots}',
+                            subtitle: 'Sessions completed',
+                            icon: IconsaxPlusLinear.activity,
+                            color: Colors.black,
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 32),
+                      ElevatedButton(
+                        onPressed: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => const BlockerScreen(),
+                            ),
+                          );
+                        },
+                        child: const Text('START FOCUS SESSION'),
+                      ),
+                      const SizedBox(height: 40),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            'RECENT SESSIONS',
+                            style: Theme.of(context)
+                                .textTheme
+                                .labelLarge
+                                ?.copyWith(
+                                  color: Colors.black45,
+                                  letterSpacing: 1.2,
+                                ),
+                          ),
+                          TextButton(
+                            onPressed: () {
+                              // TODO: Navigate to session history
+                            },
+                            child: const Text(
+                              'See all',
+                              style:
+                                  TextStyle(color: Colors.black, fontSize: 12),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      _buildRecentSession(
+                        context,
+                        'Social Media Block',
+                        '2h 00m',
+                        'Focused',
+                        IconsaxPlusLinear.close_circle,
+                      ),
+                      _buildRecentSession(
+                        context,
+                        'Deep Work Alpha',
+                        '1h 30m',
+                        'Highly Effective',
+                        IconsaxPlusLinear.monitor,
+                      ),
+                      const SizedBox(height: 40),
+                      Center(
+                        child: Column(
+                          children: [
+                            ElevatedButton.icon(
+                              icon: const Icon(IconsaxPlusLinear.security_safe),
+                              label: const Text('MANAGE APP BLOCKING'),
+                              style: ElevatedButton.styleFrom(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 32,
+                                  vertical: 16,
+                                ),
+                              ),
+                              onPressed: () {
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (context) => const BlockerScreen(),
+                                  ),
+                                );
+                              },
+                            ),
+                            const SizedBox(height: 16),
+                            OutlinedButton.icon(
+                              icon: const Icon(IconsaxPlusLinear.calendar_1),
+                              label: const Text('MANAGE SCHEDULES'),
+                              style: OutlinedButton.styleFrom(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 32,
+                                  vertical: 16,
+                                ),
+                                side: const BorderSide(
+                                    color: Colors.black, width: 2),
+                                foregroundColor: Colors.black,
+                              ),
+                              onPressed: () {
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        const ScheduleListScreen(),
+                                  ),
+                                );
+                              },
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 40),
+                    ],
                   ),
+                  loading: () =>
+                      const Center(child: CircularProgressIndicator()),
+                  error: (error, stack) => Center(child: Text('Error: $error')),
                 ),
               ],
             ),
-            const SizedBox(height: 8),
-            _buildRecentSession(
-              context,
-              'Social Media Block',
-              '2h 00m',
-              'Focused',
-              Icons.block_flipped,
-            ),
-            _buildRecentSession(
-              context,
-              'Deep Work Alpha',
-              '1h 30m',
-              'Highly Effective',
-              Icons.psychology_outlined,
-            ),
-            const SizedBox(height: 40),
-          ],
+          ),
         ),
       ),
     );
@@ -124,21 +261,28 @@ class HomeScreen extends HookConsumerWidget {
   ) {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.5),
-        borderRadius: BorderRadius.circular(20),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(24),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.03),
+            blurRadius: 20,
+            offset: const Offset(0, 4),
+          ),
+        ],
         border: Border.all(color: Colors.black.withOpacity(0.05)),
       ),
       child: Row(
         children: [
           Container(
-            padding: const EdgeInsets.all(10),
+            padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: Colors.black.withOpacity(0.05),
-              shape: BoxShape.circle,
+              color: Colors.black.withOpacity(0.03),
+              borderRadius: BorderRadius.circular(16),
             ),
-            child: Icon(icon, size: 20, color: Colors.black87),
+            child: Icon(icon, size: 24, color: Colors.black),
           ),
           const SizedBox(width: 16),
           Expanded(
@@ -148,30 +292,72 @@ class HomeScreen extends HookConsumerWidget {
                 Text(
                   title,
                   style: const TextStyle(
-                    fontWeight: FontWeight.w700,
-                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 16,
+                    letterSpacing: -0.3,
                   ),
                 ),
+                const SizedBox(height: 4),
                 Text(
                   status,
-                  style: const TextStyle(
-                    color: Colors.black38,
-                    fontSize: 12,
+                  style: TextStyle(
+                    color: Colors.black.withOpacity(0.5),
+                    fontSize: 13,
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
               ],
             ),
           ),
-          Text(
-            duration,
-            style: const TextStyle(
-              fontWeight: FontWeight.w800,
-              fontSize: 14,
-              letterSpacing: -0.5,
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            decoration: BoxDecoration(
+              color: Colors.black.withOpacity(0.05),
+              borderRadius: BorderRadius.circular(30),
+            ),
+            child: Text(
+              duration,
+              style: const TextStyle(
+                fontWeight: FontWeight.w700,
+                fontSize: 13,
+              ),
             ),
           ),
         ],
       ),
     );
+  }
+
+  double _calculateFocusScore(HomeDashboardData data) {
+    // Simple logic:
+    // - 10 points per hour saved
+    // - 15 points per deep work slot
+    // Cap at 100
+    final hours = data.todayUsageSeconds / 3600;
+    final score = (hours * 10) + (data.deepWorkSlots * 15);
+    return score.clamp(0.0, 100.0);
+  }
+
+  String _getFocusLabel(double score) {
+    if (score >= 70) return 'Highly focused';
+    if (score >= 30) return 'Focused';
+    return 'Distracted';
+  }
+
+  String _formatDuration(int seconds) {
+    final duration = Duration(seconds: seconds);
+    final hours = duration.inHours;
+    final minutes = duration.inMinutes.remainder(60);
+    return '${hours}h ${minutes}m';
+  }
+
+  String _calculateTrend(int today, int yesterday) {
+    if (yesterday == 0) {
+      return '+100% from yesterday';
+    } // Handle division by zero
+    final difference = today - yesterday;
+    final percentage = (difference / yesterday * 100).round();
+    final sign = percentage >= 0 ? '+' : '';
+    return '$sign$percentage% from yesterday';
   }
 }
