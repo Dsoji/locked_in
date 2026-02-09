@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class AppTheme {
   static ThemeData get lightTheme {
     return ThemeData(
       brightness: Brightness.light,
-      scaffoldBackgroundColor: const Color(0xFFF5F5F5), // Light Grey Background
+      scaffoldBackgroundColor: Colors.white, // Light background
       primaryColor: Colors.black,
       colorScheme: ColorScheme.fromSeed(
         seedColor: Colors.black,
         brightness: Brightness.light,
-        primary: Colors.black,
+        primary: Colors.black, // Primary accent is now black
         onPrimary: Colors.white,
         secondary: const Color(0xFF757575), // Grey 600
         onSecondary: Colors.white,
@@ -32,33 +33,35 @@ class AppTheme {
         ),
         iconTheme: IconThemeData(color: Colors.black, size: 24),
       ),
-      textTheme: const TextTheme(
-        displayLarge: TextStyle(
+      textTheme: GoogleFonts.outfitTextTheme(
+        ThemeData.light().textTheme,
+      ).copyWith(
+        displayLarge: const TextStyle(
           color: Colors.black,
           fontWeight: FontWeight.bold,
           fontSize: 30,
         ),
-        headlineMedium: TextStyle(
+        headlineMedium: const TextStyle(
           color: Colors.black,
           fontWeight: FontWeight.bold,
           fontSize: 24,
         ),
-        titleLarge: TextStyle(
+        titleLarge: const TextStyle(
           color: Colors.black,
           fontWeight: FontWeight.w600,
           fontSize: 18,
         ),
-        bodyLarge: TextStyle(
+        bodyLarge: const TextStyle(
           color: Colors.black87,
           fontSize: 16,
           fontWeight: FontWeight.normal,
         ),
-        bodyMedium: TextStyle(
+        bodyMedium: const TextStyle(
           color: Color(0xFF616161), // Grey 700
           fontSize: 14,
           fontWeight: FontWeight.normal,
         ),
-        labelLarge: TextStyle(
+        labelLarge: const TextStyle(
           color: Colors.black,
           fontWeight: FontWeight.w600,
           letterSpacing: 0.5,
@@ -223,6 +226,31 @@ class AppTheme {
           ),
           elevation: 0,
         ),
+      ),
+      navigationBarTheme: NavigationBarThemeData(
+        backgroundColor: Colors.white, // White nav bar
+        indicatorColor: Colors.black, // Black indicator
+        elevation: 0,
+        labelTextStyle: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
+            return const TextStyle(
+              color: Colors.black,
+              fontWeight: FontWeight.w700,
+              fontSize: 12,
+            );
+          }
+          return const TextStyle(
+            color: Colors.grey,
+            fontWeight: FontWeight.w500,
+            fontSize: 12,
+          );
+        }),
+        iconTheme: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
+            return const IconThemeData(color: Colors.white, size: 24);
+          }
+          return const IconThemeData(color: Colors.grey, size: 24);
+        }),
       ),
     );
   }

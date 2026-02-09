@@ -1,9 +1,11 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../blocker/service/screen_blocker_service.dart';
 import '../../home/screen/home_screen.dart';
 
+@RoutePage()
 class OnboardingScreen extends HookConsumerWidget {
   const OnboardingScreen({super.key});
 

@@ -1,3 +1,4 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:iconsax_plus/iconsax_plus.dart';
@@ -36,6 +37,7 @@ final homeDashboardDataProvider =
   );
 });
 
+@RoutePage()
 class HomeScreen extends HookConsumerWidget {
   const HomeScreen({super.key});
 
@@ -67,7 +69,7 @@ class HomeScreen extends HookConsumerWidget {
                           Theme.of(context).textTheme.headlineSmall?.copyWith(
                                 fontWeight: FontWeight.bold,
                               ),
-                    ),
+                    ).animate().fadeIn(duration: 500.ms).slideY(begin: -0.5),
                     Row(
                       children: [
                         IconButton(
@@ -101,18 +103,24 @@ class HomeScreen extends HookConsumerWidget {
                         style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                               color: Colors.black54,
                             ),
-                      ),
+                      ).animate().fadeIn(duration: 600.ms).slideX(begin: -0.2),
                       Text(
                         'Ready to focus?',
                         style: Theme.of(context).textTheme.headlineMedium,
-                      ),
+                      )
+                          .animate()
+                          .fadeIn(delay: 200.ms, duration: 600.ms)
+                          .slideX(begin: -0.2),
                       const SizedBox(height: 40),
                       Center(
                         child: FocusScoreIndicator(
                           score: _calculateFocusScore(data),
                           label: _getFocusLabel(_calculateFocusScore(data)),
                         ),
-                      ),
+                      ).animate().scale(
+                          delay: 400.ms,
+                          duration: 600.ms,
+                          curve: Curves.easeOutBack),
                       const SizedBox(height: 48),
                       GridView.count(
                         shrinkWrap: true,
@@ -129,14 +137,14 @@ class HomeScreen extends HookConsumerWidget {
                                 data.yesterdayUsageSeconds),
                             icon: IconsaxPlusLinear.timer_1,
                             color: Colors.black,
-                          ),
+                          ).animate().fadeIn(delay: 600.ms).slideY(begin: 0.2),
                           MetricCard(
                             title: 'Deep Work',
                             value: '${data.deepWorkSlots}',
                             subtitle: 'Sessions completed',
                             icon: IconsaxPlusLinear.activity,
                             color: Colors.black,
-                          ),
+                          ).animate().fadeIn(delay: 700.ms).slideY(begin: 0.2),
                         ],
                       ),
                       const SizedBox(height: 32),
@@ -149,7 +157,7 @@ class HomeScreen extends HookConsumerWidget {
                           );
                         },
                         child: const Text('START FOCUS SESSION'),
-                      ),
+                      ).animate().fadeIn(delay: 800.ms).scale(),
                       const SizedBox(height: 40),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -175,7 +183,7 @@ class HomeScreen extends HookConsumerWidget {
                             ),
                           ),
                         ],
-                      ),
+                      ).animate().fadeIn(delay: 900.ms),
                       const SizedBox(height: 8),
                       _buildRecentSession(
                         context,
@@ -183,14 +191,14 @@ class HomeScreen extends HookConsumerWidget {
                         '2h 00m',
                         'Focused',
                         IconsaxPlusLinear.close_circle,
-                      ),
+                      ).animate().fadeIn(delay: 1000.ms).slideX(begin: 0.2),
                       _buildRecentSession(
                         context,
                         'Deep Work Alpha',
                         '1h 30m',
                         'Highly Effective',
                         IconsaxPlusLinear.monitor,
-                      ),
+                      ).animate().fadeIn(delay: 1100.ms).slideX(begin: 0.2),
                       const SizedBox(height: 40),
                       Center(
                         child: Column(
@@ -236,7 +244,7 @@ class HomeScreen extends HookConsumerWidget {
                             ),
                           ],
                         ),
-                      ),
+                      ).animate().fadeIn(delay: 1200.ms).slideY(begin: 0.2),
                       const SizedBox(height: 40),
                     ],
                   ),

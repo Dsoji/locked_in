@@ -1,3 +1,4 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -10,6 +11,7 @@ final weeklyUsageProvider = FutureProvider<Map<DateTime, int>>((ref) async {
   return repository.getWeeklyUsage();
 });
 
+@RoutePage()
 class StatisticsScreen extends HookConsumerWidget {
   const StatisticsScreen({super.key});
 

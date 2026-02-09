@@ -1,9 +1,11 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:iconsax_plus/iconsax_plus.dart';
 
 import '../../../core/widgets/gradient_background.dart';
 
+@RoutePage()
 class SettingsScreen extends HookConsumerWidget {
   const SettingsScreen({super.key});
 
